@@ -64,7 +64,7 @@ Open a terminal and run the command for your distribution:
 
 1.  **Download the Script**
     ```bash
-    wget [https://raw.githubusercontent.com/CurbSoftwareInc/NVMe-Wipe-and-Sanitize/main/secure_wipe.sh](https://raw.githubusercontent.com/CurbSoftwareInc/NVMe-Wipe-and-Sanitize/main/secure_wipe.sh)
+    wget https://raw.githubusercontent.com/CurbSoftwareInc/NVMe-Wipe-and-Sanitize/main/secure_wipe.sh
     ```
 
 2.  **Make it Executable**
@@ -129,11 +129,13 @@ If you prefer to run commands manually instead of using the script, here is a si
 
 ## 8. Future Plans (To-Do)
 
-* Add an option for a less-intensive 3-pass wipe to reduce wear on the drive.
-* Compile resources and links for professional data recovery services.
+* Add an option for a less-intensive 3-pass wipe to reduce wear on the drive. Using many passes on NVMe like for HDD recommendation will eventually degrade the NVMe SSD.
+* Compile resources and links for professional data recovery methods.
 * Add guides and resources for wiping older SATA HDDs and SSDs.
 * Explore other Linux data destruction tools like `shred` and the `secure-delete` package.
-* Investigate creating a "chaff" application to fill a drive with meaningless random data before wiping.
+* Investigate creating a "chaff" application to fill a drive with meaningless random data before wiping.(Bleachbit has this feature - including Hillary's emails)
+* Secure Delete package for linux, works (links to literature suggesting up to 38 passes required but dnd standard is 3 passes for sufficiency)
+* Secure delete package for HDD takes a LONG time to complete.
 
 ---
 
@@ -142,21 +144,3 @@ If you prefer to run commands manually instead of using the script, here is a si
 This project is licensed under the **MIT License**.
 
 This script is a wrapper around the powerful [**linux-nvme/nvme-cli**](https://github.com/linux-nvme/nvme-cli) utility, which does all the heavy lifting.
-
-- Add option in this or another script to choose 3 pass, limit read/write to less passes to avoid drive degredation further.
-- Get drive data recovery links and resources
-- Sata HDD find resources, bleachbit is a good start to wipe free space.
-- Secure Delete package for linux, works (links to literature suggesting up to 38 passes required but dnd standard is 3 passes for sufficiency)
-- Secure delete package for HDD takes a LONG time to complete.
-- Using many passes on NVMe like for HDD recommendation will eventually degrade the NVMe SSD
-- Consider creating a chaff app (Bleachbit has this feature - including Hillary's emails)
-
----
-
-## License
-
-This project is licensed under the **MIT License**.
-
-## Repository
-
-**Location:** [https://github.com/CurbSoftwareInc/NVMe-Wipe-and-Sanitize](https://github.com/CurbSoftwareInc/NVMe-Wipe-and-Sanitize)
