@@ -44,6 +44,8 @@ This script is ideal for any situation where you need confidence that your data 
 
 > **A Note on Extreme Security:** If your drive contained sensitive data like critical business secrets or, say, nuke codes, the safest method is always **physical destruction** (incinerate it and buy a new one). For everything else, this script is more than sufficient. You should also be encrypting your drives from the start!
 
+I have tried this on several NVMe drive of different sizes 1tb up to 4tb.  I've been getting about 1GB/S write on them all to start, subsequent passes can get down to about half that if heat causes throttling. One of them didn't support `sanitize` so the script reverted to the next best way (see TROUBLESHOOTING.md).
+
 ## 4. Requirements
 
 1.  A **Linux-based operating system**.
