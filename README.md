@@ -44,10 +44,23 @@ The easiest and safest method is to boot from a **Live USB** of a Linux distribu
 
 ### Installing `nvme-cli`
 
-On Debian/Ubuntu-based systems, run the following command:
+**Ubuntu/Debian:**
 ```bash
-sudo apt update -y && sudo apt install -y nvme-cli
-````
+sudo apt update
+sudo apt install -y nvme-cli
+```
+
+**RHEL/CentOS/Fedora:**
+```bash
+sudo yum install -y nvme-cli
+# or
+sudo dnf install -y nvme-cli
+```
+
+**Arch Linux:**
+```bash
+sudo pacman -S nvme-cli
+```
 
 > **Acknowledgments:** This script relies entirely on the powerful `nvme-cli` utility. You can find its official documentation and repository here: [linux-nvme/nvme-cli on GitHub](https://github.com/linux-nvme/nvme-cli).
 
@@ -56,24 +69,41 @@ sudo apt update -y && sudo apt install -y nvme-cli
 1.  **Download the Script**
 
     ```bash
-    wget [https://raw.githubusercontent.com/CurbSoftwareInc/NVMe-Wipe-and-Sanitize/main/secure_wipe.sh](https://raw.githubusercontent.com/CurbSoftwareInc/NVMe-Wipe-and-Sanitize/main/secure_wipe.sh)
+    wget https://raw.githubusercontent.com/CurbSoftwareInc/NVMe-Wipe-and-Sanitize/main/secure_wipe.sh
     ```
+    OR
+    ```bash
+    git clone https://github.com/CurbSoftwareInc/NVMe-Wipe-and-Sanitize && cd NVMe-Wipe-and-Sanitize
+    ```
+    
 
-2.  **Make it Executable**
+3.  **Make it Executable**
 
     ```bash
     chmod +x secure_wipe.sh
     ```
 
-3.  **Run the Script**
+4.  **Run the Script**
     First, identify your NVMe drive name using `lsblk` or `nvme list`. Then, run the script with the target drive name.
+
+    ```bash
+    # List all NVMe drives
+    nvme list
+
+    # Show drive details
+    lsblk -d | grep nvme
+
+    # Show partitions
+    lsblk /dev/nvme0n1
+    ```
+    Then:
 
     ```bash
     # Example for the drive /dev/nvme0n1
     sudo ./secure_wipe.sh /dev/nvme0n1
     ```
 
-4.  **Confirm Destruction**
+6.  **Confirm Destruction**
     The script will display a final warning. You must type `DESTROY` and press Enter to begin the wipe process.
 
 ## Manual Commands (The "Without-the-Script" Way)
