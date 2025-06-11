@@ -135,7 +135,7 @@ If you prefer to run commands manually instead of using the script, here is a si
 * Compile resources and links for professional data recovery methods.
 * Add guides and resources for wiping older SATA HDDs and SSDs.
 * Explore other Linux data destruction tools like `shred` and the `secure-delete` package.
-* Investigate creating a "chaff" application to fill a drive with meaningless random data before wiping.(Bleachbit has this feature - including Hillary's emails)
+* **DONE** Investigate creating a "chaff" application to fill a drive with meaningless random data after wiping to leave fun easter eggs to chase.(Bleachbit has this feature - including Hillary's emails). https://github.com/CurbSoftwareInc/Chafftafarian-Chaff-Generator
 * Secure Delete package for linux, works (links to literature suggesting up to 38 passes required but dnd standard is 3 passes for sufficiency)
 * Secure delete package for HDD takes a LONG time to complete.
 
