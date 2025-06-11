@@ -6,12 +6,11 @@ A simple, no-fluff Linux script for securely wiping and sanitizing NVMe drives, 
 
 **This script will PERMANENTLY and IRRECOVERABLY DESTROY ALL DATA on the specified drive. Use with extreme caution. Double-check your drive name before proceeding.**
 
-I also want to add that all drives should be encrypted in the first place.
 ---
 
 ## About the Script
 
-The script performs a paranoid 6-pass wipe to ensure every bit of data is sanitized. This process gets into every block of the drive, making data recovery virtually impossible without nation-state-level forensic capabilities (like electron microscopes).
+The script performs a paranoid 6-pass wipe to ensure every bit of data is sanitized. This process gets into every block of the drive, making data recovery virtually impossible without nation-state-level forensic capabilities (like electron microscopes). I also want to add that all drives should be encrypted in the first place.
 
 This script was created because most data destruction tools are designed for older SATA drives (HDDs and SSDs), not modern NVMe drives. It provides a robust, multi-pass method to ensure your data is irrecoverably destroyed for security purposes, such as when reselling a drive.  The script aims to get every hidden nook and cranny.
 
