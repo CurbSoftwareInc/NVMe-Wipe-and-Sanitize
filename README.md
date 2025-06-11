@@ -1,240 +1,148 @@
-# NVMe Wipe and Sanitize
+# NVMe Secure Wipe & Sanitize Guide
 
-A simple, no-fluff Linux script for securely wiping and sanitizing NVMe drives, restoring them to factory settings as best as possible.
+A simple, no-fluff Linux script for securely wiping NVMe drives and restoring them to a factory-like state. This document serves as both a user manual for the script and a general guide to NVMe data destruction.
 
 #### ⚠️ CRITICAL WARNING ⚠️
 
-**This script will PERMANENTLY and IRRECOVERABLY DESTROY ALL DATA on the specified drive. Use with extreme caution. Double-check your drive name before proceeding.**
+**This script will PERMANENTLY and IRREVERSIBLY DESTROY ALL DATA on the specified drive. Use with extreme caution. Double-check your drive name before proceeding.**
 
 ---
 
-## About the Script
+## 1. Why Modern Drives Need Special Wiping
 
-Writing 0s and 1s is not good enough for NVMe drives, you should use the drives built-in reset.  This script does check that the drive is compatible with the software to do a proper crypto erase and reset.
+Modern NVMe SSDs are not like old hard drives. Due to complex internal features like wear-leveling and over-provisioned space (extra storage the user can't see), simply writing 0s and 1s across the drive is **not good enough** to guarantee all data is gone. Some data can be left behind in "hidden" areas, making it potentially recoverable.
 
-The script performs a paranoid 6-pass wipe to ensure every bit of data is sanitized. This process gets into every block of the drive, making data recovery virtually impossible without nation-state-level forensic capabilities (like electron microscopes). I also want to add that all drives should be encrypted in the first place.
+The most effective method is to use the drive's built-in **`Sanitize`** command. This tells the drive's own controller to perform a hardware-level erase, which is the most reliable way to perform a "crypto erase" or factory reset on the NAND flash chips.
 
-This script was created because most data destruction tools are designed for older SATA drives (HDDs and SSDs), not modern NVMe drives. It provides a robust, multi-pass method to ensure your data is irrecoverably destroyed for security purposes, such as when reselling a drive.  The script aims to get every hidden nook and cranny.
+This script was created because most data destruction tools were designed for older SATA drives. It provides a robust, multi-pass method specifically for modern NVMe drives to ensure your data is irrecoverably destroyed.
 
-Note: If the NVMe contained sensive data like business secrets or nuke codes etc., best to incinerate the drive and buy a new one.  The script will unmount the target drive if required, partitions are irrelevant, they'll be gone too.
+## 2. What This Script Does
 
-suitable for:
-- Selling or gifting drives
-- Returning RMA drives
-- Disposing of drives
-- Compliance with data destruction policies
+This script performs a "paranoid" 6-pass wipe designed to get into every hidden nook and cranny of the drive, making data recovery virtually impossible without nation-state-level forensic capabilities (like electron microscopes).
 
-The wipe process is as follows:
-1.  **Pass 1:** NVMe Sanitize (Hardware-level block erase)
+* **Hardware Erase (If Supported):** The script first tries to use the drive's powerful built-in `NVMe Sanitize` command.
+* **Software Overwrites:** It then performs multiple full-disk overwrites with different data patterns (`0x00` and `0xFF`) to ensure maximum data destruction.
+
+This combination ensures that even if a drive doesn't support the hardware sanitize feature, it is still wiped thoroughly. The script will unmount the target drive if needed; any partitions are irrelevant, as they will be destroyed too.
+
+**The Wipe Process:**
+1.  **Pass 1:** NVMe Sanitize (Hardware block erase, if supported)
 2.  **Pass 2:** Overwrite with Zeros (`0x00`)
 3.  **Pass 3:** Overwrite with Ones (`0xFF`)
 4.  **Pass 4:** Overwrite with Zeros (`0x00`)
-5.  **Pass 5:** NVMe Sanitize (Second hardware-level block erase)
-6.  **Pass 6:** Overwrite with Zeros (`0x00`) (Final pass)
+5.  **Pass 5:** NVMe Sanitize (A second hardware erase, if supported)
+6.  **Pass 6:** Final Overwrite with Zeros (`0x00`)
 
-A healthy drive can achieve speeds of around 1 GB/s for each pass, though performance may throttle on later passes due to heat.
+## 3. When to Use This Script
 
-## Requirements
+This script is ideal for any situation where you need confidence that your data is gone for good.
 
-* A Linux-based operating system.
-* `nvme-cli` installed.
+* Selling or gifting a drive.
+* Returning a drive for an RMA.
+* Disposing of old drives.
+* Complying with data destruction policies.
 
-The easiest and safest method is to boot from a **Live USB** of a Linux distribution like Ubuntu or Linux Mint. This allows you to choose and even wipe the drive your main operating system is/was on.
+> **A Note on Extreme Security:** If your drive contained sensitive data like critical business secrets or, say, nuke codes, the safest method is always **physical destruction** (incinerate it and buy a new one). For everything else, this script is more than sufficient. You should also be encrypting your drives from the start!
+
+## 4. Requirements
+
+1.  A **Linux-based operating system**.
+2.  The **`nvme-cli`** utility installed.
+
+The safest and easiest way to use this script is by booting from a **Live USB** of a distribution like Ubuntu or Linux Mint. This ensures the target drive (even your main OS drive) is not in use.
 
 ### Installing `nvme-cli`
 
-**Ubuntu/Debian:**
-```bash
-sudo apt update
-sudo apt install -y nvme-cli
-```
+Open a terminal and run the command for your distribution:
+* **Debian / Ubuntu:** `sudo apt update && sudo apt install -y nvme-cli`
+* **Fedora / CentOS / RHEL:** `sudo dnf install -y nvme-cli`
+* **Arch Linux:** `sudo pacman -S nvme-cli`
 
-**RHEL/CentOS/Fedora:**
-```bash
-sudo yum install -y nvme-cli
-# or
-sudo dnf install -y nvme-cli
-```
+---
 
-**Arch Linux:**
-```bash
-sudo pacman -S nvme-cli
-```
-
-> **Acknowledgments:** This script relies entirely on the powerful `nvme-cli` utility. You can find its official documentation and repository here: [linux-nvme/nvme-cli on GitHub](https://github.com/linux-nvme/nvme-cli).
-
-## How to Use
+## 5. How to Use the Script
 
 1.  **Download the Script**
-
     ```bash
-    wget https://raw.githubusercontent.com/CurbSoftwareInc/NVMe-Wipe-and-Sanitize/main/secure_wipe.sh
+    wget [https://raw.githubusercontent.com/CurbSoftwareInc/NVMe-Wipe-and-Sanitize/main/secure_wipe.sh](https://raw.githubusercontent.com/CurbSoftwareInc/NVMe-Wipe-and-Sanitize/main/secure_wipe.sh)
     ```
-    OR
-    ```bash
-    git clone https://github.com/CurbSoftwareInc/NVMe-Wipe-and-Sanitize && cd NVMe-Wipe-and-Sanitize
-    ```
-    
 
-3.  **Make it Executable**
-
+2.  **Make it Executable**
     ```bash
     chmod +x secure_wipe.sh
     ```
 
-4.  **Run the Script**
-    First, identify your NVMe drive name using `lsblk` or `nvme list`. Then, run the script with the target drive name.
-
+3.  **Identify Your Drive**
+    Use `nvme list` or `lsblk` to find the correct device name (e.g., `/dev/nvme0n1`). **Be careful!**
     ```bash
-    # List all NVMe drives
-    nvme list
-
-    # Show drive details
+    sudo nvme list
+    # or
     lsblk -d | grep nvme
-
-    # Show partitions
-    lsblk /dev/nvme0n1
     ```
-    Then:
 
+4.  **Run the Script**
+    Execute the script with `sudo` and pass the drive name as an argument.
     ```bash
     # Example for the drive /dev/nvme0n1
     sudo ./secure_wipe.sh /dev/nvme0n1
     ```
 
-6.  **Confirm Destruction**
-    The script will display a final warning. You must type `DESTROY` and press Enter to begin the wipe process.
+5.  **Confirm Destruction**
+    The script will show a final, critical warning. You must type **`DESTROY`** and press Enter to begin.
 
-## Manual Commands (The "Without-the-Script" Way)
+## 6. Verification
 
-If you prefer to run the commands manually, here is a simplified sequence to perform a basic sanitize and wipe after installing `nvme-cli`.
+After the script finishes, you can run a few checks to verify the wipe.
 
-1.  **Unmount the drive (replace `nvme0n1` with your drive)**
-
+1.  **Check for Partitions (Should be none)**
     ```bash
-    # This command attempts to unmount all partitions on the specified drive
-    sudo umount /dev/nvme0n1*
-    ```
-    
-    ```bash
-    # Make sure no processes are using it
-    sudo fuser -v /dev/nvme0n1
-    sudo lsof /dev/nvme0n1
-    ```
-    
-    ```bash
-    # Check sanitize capabilities
-    sudo nvme sanitize-log /dev/nvme0n1
+    lsblk /dev/nvme0n1
     ```
 
-2.  **Run the NVMe Sanitize Command**
-    This uses the drive's built-in hardware erase function, which is fast and effective.
-
+2.  **Read Sectors (Should be all zeros)**
+    This command reads the first 5 KB of the drive and displays it in hexadecimal. The output should be all `00`s.
     ```bash
-    # --sanact=2 specifies a Block Erase
-    sudo nvme sanitize /dev/nvme0n1 --sanact=2
-    ```
-    
-    ```bash
-    # Crypto erase sanitize  
-    sudo nvme sanitize /dev/nvme0n1 --sanact=4
+    sudo dd if=/dev/nvme0n1 bs=512 count=10 | hexdump -C
     ```
 
+3.  **Spot-Check Random Locations**
+    This loop checks the beginning of the drive, a spot 1 GB in, and a spot 10 GB in.
     ```bash
-    # These work on the entire drive, regardless of partitions
-    sudo nvme sanitize /dev/nvme0n1 --sanact=2
-    ```
-    
-    OR
-    
-    ```bash
-    sudo nvme format /dev/nvme0n1 --ses=2
+    for offset in 0 1073741824 10737418240; do
+      echo "Checking offset $offset..."
+      sudo dd if=/dev/nvme0n1 bs=512 count=1 skip=$((offset/512)) 2>/dev/null | hexdump -C | head -n 2
+    done
     ```
 
-3.  **Monitor Progress**
-    You can check the status in a separate terminal. Repeat the command until the progress shows `65535` (100%) and the status indicates completion.
+## 7. Manual Execution Guide
 
-    ```bash
-    watch 'sudo nvme sanitize-log /dev/nvme0n1'
-    ```
+If you prefer to run commands manually instead of using the script, here is a simplified sequence.
 
-4.  **(Optional) Overwrite with Zeros**
-    For an extra layer of security, you can perform a full overwrite with zeros after the sanitize is complete.
+1.  **Unmount the Drive:** `sudo umount /dev/nvme0n1*`
+2.  **Run Sanitize:** `sudo nvme sanitize /dev/nvme0n1 --sanact=2`
+3.  **Monitor Progress:** `watch 'sudo nvme sanitize-log /dev/nvme0n1'`
+4.  **Optional Overwrites:**
+    * Zeros: `sudo dd if=/dev/zero of=/dev/nvme0n1 bs=1M status=progress oflag=direct`
+    * Ones: `tr '\000' '\377' < /dev/zero | sudo dd of=/dev/nvme0n1 bs=1M status=progress oflag=direct`
 
-    ```bash
-    sudo dd if=/dev/zero of=/dev/nvme0n1 bs=1M status=progress
-    ```
+---
 
-5.  **(Optional) Overwrite with Ones**
+## 8. Future Plans (To-Do)
 
-    ```bash
-    tr '\000' '\377' < /dev/zero | sudo dd of=/dev/nvme0n1 bs=1M status=progress
-    ```
+* Add an option for a less-intensive 3-pass wipe to reduce wear on the drive.
+* Compile resources and links for professional data recovery services.
+* Add guides and resources for wiping older SATA HDDs and SSDs.
+* Explore other Linux data destruction tools like `shred` and the `secure-delete` package.
+* Investigate creating a "chaff" application to fill a drive with meaningless random data before wiping.
 
-### Another option
+---
 
-Some people use the method of encrypting the entire drive, filling it with chaff until all disk space is full, then unmounting and formatting it, you can combine with this script if you want.
-The issue I had with that method is for reselling you might want to do a sort of factory reset and ensure every block, including manufacturer ones are overwritten.  Check out nvme-cli because they are the pros. 
+## 9. License & Acknowledgments
 
-### Common Issues
+This project is licensed under the **MIT License**.
 
-**"Sanitize In Progress" Error**
-- The script automatically detects and aborts existing sanitize operations
-- You can manually abort with: `sudo nvme sanitize /dev/nvme0n1 --sanact=0`
+This script is a wrapper around the powerful [**linux-nvme/nvme-cli**](https://github.com/linux-nvme/nvme-cli) utility, which does all the heavy lifting.
 
-**"No space left on device" During DD**
-- This is normal and means the write completed successfully
-- The script handles this automatically
-
-**Permission Denied**
-- Ensure you're running with sudo or as root
-- Check drive permissions: `ls -la /dev/nvme*`
-
-**Drive Not Found**
-- Verify drive path: `nvme list`
-- Ensure drive is connected and recognized: `lsblk`
-
-### Verification
-
-After wiping, you can verify the drive is empty:
-
-
-```bash
-# Check sanitize status
-sudo nvme sanitize-log /dev/nvme0n1
-
-# Check if partitions still exist
-lsblk /dev/nvme0n1
-
-# Try to read the first few sectors (should be all zeros)
-sudo dd if=/dev/nvme0n1 bs=512 count=10 | hexdump -C
-```
-
-```bash
-# Check multiple locations
-for offset in 0 1073741824 10737418240; do
-    echo "Checking offset $offset..."
-    sudo dd if=/dev/nvme0n1 bs=512 count=1 skip=$((offset/512)) 2>/dev/null | hexdump -C | head -n 2
-done
-```
-
-### Another potentially more efficient approach (not recommended - but if you're in a pinch):
-
-```bash
-# Create a file filled with 0xFF pattern, then write it
-sudo dd if=/dev/zero bs=1M count=1 | tr '\000' '\377' > /tmp/ones_pattern
-sudo dd if=/tmp/ones_pattern of=/dev/nvme0n1 bs=1M conv=fsync status=progress
-sudo dd if=/dev/nvme0n1 bs=512 count=10 | hexdump -C
-sudo dd if=/dev/zero of=/dev/nvme0n1 bs=1M status=progress
-```
-
-**Remember**: Always double-check the drive path before running any wipe operation!
-
-Good Resources:
-- https://github.com/sensei-hacker/super_drive_wipe
-
-
-TO DOs:
 - Add option in this or another script to choose 3 pass, limit read/write to less passes to avoid drive degredation further.
 - Get drive data recovery links and resources
 - Sata HDD find resources, bleachbit is a good start to wipe free space.
