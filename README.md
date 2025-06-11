@@ -199,13 +199,13 @@ After wiping, you can verify the drive is empty:
 
 ```bash
 # Check sanitize status
-sudo nvme sanitize-log /dev/nvme1n1
+sudo nvme sanitize-log /dev/nvme0n1
 
 # Check if partitions still exist
-lsblk /dev/nvme1n1
+lsblk /dev/nvme0n1
 
 # Try to read the first few sectors (should be all zeros)
-sudo dd if=/dev/nvme1n1 bs=512 count=10 | hexdump -C
+sudo dd if=/dev/nvme0n1 bs=512 count=10 | hexdump -C
 ```
 
 ```bash
@@ -221,9 +221,9 @@ done
 ```bash
 # Create a file filled with 0xFF pattern, then write it
 sudo dd if=/dev/zero bs=1M count=1 | tr '\000' '\377' > /tmp/ones_pattern
-sudo dd if=/tmp/ones_pattern of=/dev/nvme1n1 bs=1M conv=fsync status=progress
-sudo dd if=/dev/nvme1n1 bs=512 count=10 | hexdump -C
-sudo dd if=/dev/zero of=/dev/nvme1n1 bs=1M status=progress
+sudo dd if=/tmp/ones_pattern of=/dev/nvme0n1 bs=1M conv=fsync status=progress
+sudo dd if=/dev/nvme0n1 bs=512 count=10 | hexdump -C
+sudo dd if=/dev/zero of=/dev/nvme0n1 bs=1M status=progress
 ```
 
 **Remember**: Always double-check the drive path before running any wipe operation!
