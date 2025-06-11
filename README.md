@@ -236,3 +236,11 @@ sudo dd if=/dev/zero of=/dev/nvme1n1 bs=1M status=progress
 ```
 
 **Remember**: Always double-check the drive path before running any wipe operation!
+
+TO Dos:
+- Get drive data recovery links and resources
+- Sata HDD find resources, bleachbit is a good start to wipe free space.
+- Secure Delete package for linux, works (links to literature suggesting up to 38 passes required but dnd standard is 3 passes for sufficiency)
+- Secure delete package for HDD takes a LONG time to complete.
+- Using many passes on NVMe like for HDD recommendation will eventually degrade the NVMe SSD
+- Consider creating a chaff app (Bleachbit has this feature - including Hillary's emails)
