@@ -1,8 +1,6 @@
 # NVMe Wipe and Sanitize
 
-A simple, no-fluff Linux script for securely wiping and sanitizing NVMe drives, restoring them to factory settings.
-
-This script was created because most data destruction tools are designed for older SATA drives (HDDs and SSDs), not modern NVMe drives. It provides a robust, multi-pass method to ensure your data is irrecoverably destroyed for security purposes, such as when reselling a drive.  The script aims to get every hidden nook and cranny.
+A simple, no-fluff Linux script for securely wiping and sanitizing NVMe drives, restoring them to factory settings as best as possible.
 
 #### ⚠️ CRITICAL WARNING ⚠️
 
@@ -10,19 +8,12 @@ This script was created because most data destruction tools are designed for old
 
 ---
 
-## License
-
-This project is licensed under the **MIT License**.
-
-## Repository
-
-**Location:** [https://github.com/CurbSoftwareInc/NVMe-Wipe-and-Sanitize](https://github.com/CurbSoftwareInc/NVMe-Wipe-and-Sanitize)
-
----
-
 ## About the Script
 
-The script performs a paranoid 6-pass wipe to ensure every bit of data is sanitized. This process gets into every nook and cranny of the drive, making data recovery virtually impossible without nation-state-level forensic capabilities (like electron microscopes).
+The script performs a paranoid 6-pass wipe to ensure every bit of data is sanitized. This process gets into every block of the drive, making data recovery virtually impossible without nation-state-level forensic capabilities (like electron microscopes).
+
+This script was created because most data destruction tools are designed for older SATA drives (HDDs and SSDs), not modern NVMe drives. It provides a robust, multi-pass method to ensure your data is irrecoverably destroyed for security purposes, such as when reselling a drive.  The script aims to get every hidden nook and cranny.
+
 Note: If the NVMe contained sensive data like business secrets or nuke codes etc., best to incinerate the drive and buy a new one.  The script will unmount the target drive if required, partitions are irrelevant, they'll be gone too.
 
 suitable for:
@@ -225,7 +216,7 @@ for offset in 0 1073741824 10737418240; do
 done
 ```
 
-### Another potentially more efficient approach:
+### Another potentially more efficient approach (not recommended - but if you're in a pinch):
 
 ```bash
 # Create a file filled with 0xFF pattern, then write it
@@ -244,3 +235,13 @@ TO Dos:
 - Secure delete package for HDD takes a LONG time to complete.
 - Using many passes on NVMe like for HDD recommendation will eventually degrade the NVMe SSD
 - Consider creating a chaff app (Bleachbit has this feature - including Hillary's emails)
+
+---
+
+## License
+
+This project is licensed under the **MIT License**.
+
+## Repository
+
+**Location:** [https://github.com/CurbSoftwareInc/NVMe-Wipe-and-Sanitize](https://github.com/CurbSoftwareInc/NVMe-Wipe-and-Sanitize)
