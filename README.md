@@ -10,6 +10,8 @@ A simple, no-fluff Linux script for securely wiping and sanitizing NVMe drives, 
 
 ## About the Script
 
+Writing 0s and 1s is not good enough for NVMe drives, you should use the drives built-in reset.  This script does check that the drive is compatible with the software to do a proper crypto erase and reset.
+
 The script performs a paranoid 6-pass wipe to ensure every bit of data is sanitized. This process gets into every block of the drive, making data recovery virtually impossible without nation-state-level forensic capabilities (like electron microscopes). I also want to add that all drives should be encrypted in the first place.
 
 This script was created because most data destruction tools are designed for older SATA drives (HDDs and SSDs), not modern NVMe drives. It provides a robust, multi-pass method to ensure your data is irrecoverably destroyed for security purposes, such as when reselling a drive.  The script aims to get every hidden nook and cranny.
@@ -227,6 +229,10 @@ sudo dd if=/dev/zero of=/dev/nvme0n1 bs=1M status=progress
 ```
 
 **Remember**: Always double-check the drive path before running any wipe operation!
+
+Good Resources:
+- https://github.com/sensei-hacker/super_drive_wipe
+
 
 TO DOs:
 - Add option in this or another script to choose 3 pass, limit read/write to less passes to avoid drive degredation further.
