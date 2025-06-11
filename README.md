@@ -25,6 +25,12 @@ This project is licensed under the **MIT License**.
 The script performs a paranoid 6-pass wipe to ensure every bit of data is sanitized. This process gets into every nook and cranny of the drive, making data recovery virtually impossible without nation-state-level forensic capabilities (like electron microscopes).
 Note: If the NVMe contained sensive data like business secrets or nuke codes etc., best to incinerate the drive and buy a new one.  The script will unmount the target drive if required, partitions are irrelevant, they'll be gone too.
 
+suitable for:
+- Selling or gifting drives
+- Returning RMA drives
+- Disposing of drives
+- Compliance with data destruction policies
+
 The wipe process is as follows:
 1.  **Pass 1:** NVMe Sanitize (Hardware-level block erase)
 2.  **Pass 2:** Overwrite with Zeros (`0x00`)
@@ -116,6 +122,17 @@ If you prefer to run the commands manually, here is a simplified sequence to per
     # This command attempts to unmount all partitions on the specified drive
     sudo umount /dev/nvme0n1*
     ```
+    
+    ```bash
+    # Make sure no processes are using it
+    sudo fuser -v /dev/nvme0n1
+    sudo lsof /dev/nvme0n1
+    ```
+    
+    ```bash
+    # Check sanitize capabilities
+    sudo nvme sanitize-log /dev/nvme0n1
+    ```
 
 2.  **Run the NVMe Sanitize Command**
     This uses the drive's built-in hardware erase function, which is fast and effective.
@@ -123,6 +140,22 @@ If you prefer to run the commands manually, here is a simplified sequence to per
     ```bash
     # --sanact=2 specifies a Block Erase
     sudo nvme sanitize /dev/nvme0n1 --sanact=2
+    ```
+    
+    ```bash
+    # Crypto erase sanitize  
+    sudo nvme sanitize /dev/nvme0n1 --sanact=4
+    ```
+
+    ```bash
+    # These work on the entire drive, regardless of partitions
+    sudo nvme sanitize /dev/nvme0n1 --sanact=2
+    ```
+    
+    OR
+    
+    ```bash
+    sudo nvme format /dev/nvme0n1 --ses=2
     ```
 
 3.  **Monitor Progress**
@@ -149,3 +182,57 @@ If you prefer to run the commands manually, here is a simplified sequence to per
 
 Some people use the method of encrypting the entire drive, filling it with chaff until all disk space is full, then unmounting and formatting it, you can combine with this script if you want.
 The issue I had with that method is for reselling you might want to do a sort of factory reset and ensure every block, including manufacturer ones are overwritten.  Check out nvme-cli because they are the pros. 
+
+### Common Issues
+
+**"Sanitize In Progress" Error**
+- The script automatically detects and aborts existing sanitize operations
+- You can manually abort with: `sudo nvme sanitize /dev/nvme0n1 --sanact=0`
+
+**"No space left on device" During DD**
+- This is normal and means the write completed successfully
+- The script handles this automatically
+
+**Permission Denied**
+- Ensure you're running with sudo or as root
+- Check drive permissions: `ls -la /dev/nvme*`
+
+**Drive Not Found**
+- Verify drive path: `nvme list`
+- Ensure drive is connected and recognized: `lsblk`
+
+### Verification
+
+After wiping, you can verify the drive is empty:
+
+
+```bash
+# Check sanitize status
+sudo nvme sanitize-log /dev/nvme1n1
+
+# Check if partitions still exist
+lsblk /dev/nvme1n1
+
+# Try to read the first few sectors (should be all zeros)
+sudo dd if=/dev/nvme1n1 bs=512 count=10 | hexdump -C
+```
+
+```bash
+# Check multiple locations
+for offset in 0 1073741824 10737418240; do
+    echo "Checking offset $offset..."
+    sudo dd if=/dev/nvme0n1 bs=512 count=1 skip=$((offset/512)) 2>/dev/null | hexdump -C | head -n 2
+done
+```
+
+### Another potentially more efficient approach:
+
+```bash
+# Create a file filled with 0xFF pattern, then write it
+sudo dd if=/dev/zero bs=1M count=1 | tr '\000' '\377' > /tmp/ones_pattern
+sudo dd if=/tmp/ones_pattern of=/dev/nvme1n1 bs=1M conv=fsync status=progress
+sudo dd if=/dev/nvme1n1 bs=512 count=10 | hexdump -C
+sudo dd if=/dev/zero of=/dev/nvme1n1 bs=1M status=progress
+```
+
+**Remember**: Always double-check the drive path before running any wipe operation!
